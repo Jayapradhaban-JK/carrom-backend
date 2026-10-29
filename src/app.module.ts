@@ -24,6 +24,10 @@ import { FixturesModule } from './modules/fixtures/fixtures.module';
 import { MatchesModule } from './modules/matches/matches.module';
 import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
 
+// Render Cloud PostgreSQL Database directly hardcoded
+const RENDER_DATABASE_URL =
+  'postgresql://carrom_user:CvlUgeAEBVxDS3eXsDXggLh33It86QvJ@dpg-dbhhluoae00c73dqc0qg-a.oregon-postgres.render.com/carrom';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -40,43 +44,12 @@ import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        const dbUrl = config.get<string>('DATABASE_URL');
-        const isSsl =
-          config.get<string>('DB_SSL') === 'true' ||
-          Boolean(
-            dbUrl &&
-              (dbUrl.includes('render.com') ||
-                dbUrl.includes('sslmode=') ||
-                dbUrl.includes('oregon-postgres')),
-          );
-
-        if (dbUrl) {
-          return {
-            type: 'postgres',
-            url: dbUrl,
-            ssl: isSsl ? { rejectUnauthorized: false } : false,
-            entities: [
-              Admin,
-              Tournament,
-              Team,
-              Player,
-              Match,
-              MatchEvent,
-              TournamentSetting,
-            ],
-            synchronize: true, // auto create schema if missing
-            logging: false,
-          };
-        }
+        const dbUrl = config.get<string>('DATABASE_URL') || RENDER_DATABASE_URL;
 
         return {
           type: 'postgres',
-          host: config.get<string>('DB_HOST', 'localhost'),
-          port: parseInt(config.get<string>('DB_PORT', '5431'), 10),
-          username: config.get<string>('DB_USERNAME', 'postgres'),
-          password: config.get<string>('DB_PASSWORD', 'sa1234'),
-          database: config.get<string>('DB_NAME', 'carrom'),
-          ssl: isSsl ? { rejectUnauthorized: false } : false,
+          url: dbUrl,
+          ssl: { rejectUnauthorized: false },
           entities: [
             Admin,
             Tournament,
