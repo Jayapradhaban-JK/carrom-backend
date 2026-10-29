@@ -45,6 +45,12 @@ export class Team {
   @Column({ nullable: true })
   contact_number: string;
 
+  @Column({ type: 'text', nullable: true })
+  logo_url: string;
+
+  @Column({ type: 'varchar', length: 120, nullable: true })
+  tagline: string;
+
   @Column({ default: 'CONFIRMED' })
   status: string;
 

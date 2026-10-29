@@ -78,6 +78,10 @@ export class FixturesService {
       // 1. Delete existing matches and events if regenerating
       if (existingCount > 0) {
         await manager.query(
+          `DELETE FROM match_events WHERE match_id IN (SELECT id FROM matches WHERE tournament_id = $1)`,
+          [tournament.id],
+        );
+        await manager.query(
           `DELETE FROM matches WHERE tournament_id = $1`,
           [tournament.id],
         );
@@ -472,6 +476,10 @@ export class FixturesService {
     const tournament = await this.tournamentsService.getOrCreateActiveTournament();
 
     return this.dataSource.transaction(async (manager) => {
+      await manager.query(
+        `DELETE FROM match_events WHERE match_id IN (SELECT id FROM matches WHERE tournament_id = $1)`,
+        [tournament.id],
+      );
       await manager.query(`DELETE FROM matches WHERE tournament_id = $1`, [
         tournament.id,
       ]);

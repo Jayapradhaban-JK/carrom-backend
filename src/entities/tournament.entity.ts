@@ -75,6 +75,9 @@ export class Tournament {
   @Column({ default: 25 })
   target_score: number;
 
+  @Column({ type: 'text', nullable: true })
+  banner_url: string;
+
   @Column({ type: 'jsonb', nullable: true, default: {} })
   settings: Record<string, any>;
 

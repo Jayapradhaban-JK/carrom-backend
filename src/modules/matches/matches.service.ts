@@ -43,7 +43,9 @@ export class MatchesService {
     const query = this.matchRepo
       .createQueryBuilder('match')
       .leftJoinAndSelect('match.team_a', 'team_a')
+      .leftJoinAndSelect('team_a.players', 'team_a_players')
       .leftJoinAndSelect('match.team_b', 'team_b')
+      .leftJoinAndSelect('team_b.players', 'team_b_players')
       .leftJoinAndSelect('match.winner_team', 'winner_team')
       .where('match.tournament_id = :tid', { tid: tournament.id });
 
@@ -64,7 +66,14 @@ export class MatchesService {
   async findOne(id: string): Promise<Match> {
     const match = await this.matchRepo.findOne({
       where: { id },
-      relations: ['team_a', 'team_b', 'winner_team', 'events'],
+      relations: [
+        'team_a',
+        'team_a.players',
+        'team_b',
+        'team_b.players',
+        'winner_team',
+        'events',
+      ],
       order: { events: { created_at: 'ASC' } },
     });
     if (!match) {

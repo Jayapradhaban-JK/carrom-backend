@@ -56,4 +56,8 @@ export class UpdateTournamentDto {
   @Min(1)
   @Max(100)
   target_score?: number;
+
+  @IsOptional()
+  @IsString()
+  banner_url?: string;
 }

@@ -11,16 +11,37 @@ import { TournamentSetting } from './entities/tournament-setting.entity';
 
 dotenv.config();
 
-const AppDataSource = new DataSource({
-  type: 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5431', 10),
-  username: process.env.DB_USERNAME || 'postgres',
-  password: process.env.DB_PASSWORD || 'sa1234',
-  database: process.env.DB_NAME || 'carrom',
-  entities: [Admin, Tournament, Team, Player, Match, MatchEvent, TournamentSetting],
-  synchronize: true, // safe for initialization
-});
+const dbUrl = process.env.DATABASE_URL;
+const isSsl =
+  process.env.DB_SSL === 'true' ||
+  Boolean(
+    dbUrl &&
+      (dbUrl.includes('render.com') ||
+        dbUrl.includes('sslmode=') ||
+        dbUrl.includes('oregon-postgres')),
+  );
+
+const AppDataSource = new DataSource(
+  dbUrl
+    ? {
+        type: 'postgres',
+        url: dbUrl,
+        ssl: isSsl ? { rejectUnauthorized: false } : false,
+        entities: [Admin, Tournament, Team, Player, Match, MatchEvent, TournamentSetting],
+        synchronize: true,
+      }
+    : {
+        type: 'postgres',
+        host: process.env.DB_HOST || 'localhost',
+        port: parseInt(process.env.DB_PORT || '5431', 10),
+        username: process.env.DB_USERNAME || 'postgres',
+        password: process.env.DB_PASSWORD || 'sa1234',
+        database: process.env.DB_NAME || 'carrom',
+        ssl: isSsl ? { rejectUnauthorized: false } : false,
+        entities: [Admin, Tournament, Team, Player, Match, MatchEvent, TournamentSetting],
+        synchronize: true,
+      },
+);
 
 async function runSeed() {
   console.log('Connecting to PostgreSQL database...');

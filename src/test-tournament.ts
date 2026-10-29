@@ -141,6 +141,8 @@ async function runTests() {
     contact_number: '9876543210',
     player_names: ['Rohan Sharma', 'Vikram Patel'],
     substitutes: ['Arun Kumar'],
+    tagline: 'Strike with precision',
+    logo_url: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="%238B5A2B"/></svg>',
   });
   console.log(`✓ Registered Team 1: "${team1.team_name}" (${team1.registration_number}) with 2 active players & 1 substitute.`);
 

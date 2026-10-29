@@ -169,6 +169,8 @@ export class TeamsService {
         normalized_team_name: normalizedName,
         captain_name: cleanCaptain,
         contact_number: dto.contact_number ? dto.contact_number.trim() : null,
+        logo_url: dto.logo_url || null,
+        tagline: dto.tagline ? dto.tagline.trim() : null,
         registration_number: regNumber,
         status: 'CONFIRMED',
       });
@@ -256,6 +258,14 @@ export class TeamsService {
 
     if (dto.contact_number !== undefined) {
       team.contact_number = dto.contact_number ? dto.contact_number.trim() : null;
+    }
+
+    if (dto.logo_url !== undefined) {
+      team.logo_url = dto.logo_url || null;
+    }
+
+    if (dto.tagline !== undefined) {
+      team.tagline = dto.tagline ? dto.tagline.trim() : null;
     }
 
     return this.dataSource.transaction(async (manager) => {

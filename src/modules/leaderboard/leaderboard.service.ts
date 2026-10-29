@@ -11,6 +11,7 @@ export interface StandingsRow {
   team_id: string;
   team_name: string;
   captain_name: string;
+  players_summary?: string;
   registration_number: string;
   played: number;
   won: number;
@@ -41,11 +42,18 @@ export class LeaderboardService {
       this.teamRepo.find({
         where: { tournament_id: tournament.id },
         order: { team_name: 'ASC' },
+        relations: ['players'],
       }),
       this.matchRepo.find({
         where: { tournament_id: tournament.id },
         order: { match_number: 'ASC' },
-        relations: ['team_a', 'team_b', 'winner_team'],
+        relations: [
+          'team_a',
+          'team_a.players',
+          'team_b',
+          'team_b.players',
+          'winner_team',
+        ],
       }),
     ]);
 
@@ -151,11 +159,19 @@ export class LeaderboardService {
     const tableMap = new Map<string, StandingsRow>();
 
     for (const team of teams) {
+      const p1 = team.captain_name;
+      const p2 =
+        team.players?.find((p) => !p.is_captain)?.player_name ||
+        team.players?.[1]?.player_name ||
+        '';
+      const playersSummary = p2 ? `${p1} & ${p2}` : p1;
+
       tableMap.set(team.id, {
         position: 0,
         team_id: team.id,
         team_name: team.team_name,
         captain_name: team.captain_name,
+        players_summary: playersSummary,
         registration_number: team.registration_number,
         played: 0,
         won: 0,

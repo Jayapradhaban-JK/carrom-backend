@@ -39,25 +39,57 @@ import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.get<string>('DB_HOST', 'localhost'),
-        port: parseInt(config.get<string>('DB_PORT', '5431'), 10),
-        username: config.get<string>('DB_USERNAME', 'postgres'),
-        password: config.get<string>('DB_PASSWORD', 'sa1234'),
-        database: config.get<string>('DB_NAME', 'carrom'),
-        entities: [
-          Admin,
-          Tournament,
-          Team,
-          Player,
-          Match,
-          MatchEvent,
-          TournamentSetting,
-        ],
-        synchronize: true, // auto create schema if missing
-        logging: false,
-      }),
+      useFactory: (config: ConfigService) => {
+        const dbUrl = config.get<string>('DATABASE_URL');
+        const isSsl =
+          config.get<string>('DB_SSL') === 'true' ||
+          Boolean(
+            dbUrl &&
+              (dbUrl.includes('render.com') ||
+                dbUrl.includes('sslmode=') ||
+                dbUrl.includes('oregon-postgres')),
+          );
+
+        if (dbUrl) {
+          return {
+            type: 'postgres',
+            url: dbUrl,
+            ssl: isSsl ? { rejectUnauthorized: false } : false,
+            entities: [
+              Admin,
+              Tournament,
+              Team,
+              Player,
+              Match,
+              MatchEvent,
+              TournamentSetting,
+            ],
+            synchronize: true, // auto create schema if missing
+            logging: false,
+          };
+        }
+
+        return {
+          type: 'postgres',
+          host: config.get<string>('DB_HOST', 'localhost'),
+          port: parseInt(config.get<string>('DB_PORT', '5431'), 10),
+          username: config.get<string>('DB_USERNAME', 'postgres'),
+          password: config.get<string>('DB_PASSWORD', 'sa1234'),
+          database: config.get<string>('DB_NAME', 'carrom'),
+          ssl: isSsl ? { rejectUnauthorized: false } : false,
+          entities: [
+            Admin,
+            Tournament,
+            Team,
+            Player,
+            Match,
+            MatchEvent,
+            TournamentSetting,
+          ],
+          synchronize: true, // auto create schema if missing
+          logging: false,
+        };
+      },
     }),
     TypeOrmModule.forFeature([Admin, Tournament]),
     UpdatesModule,

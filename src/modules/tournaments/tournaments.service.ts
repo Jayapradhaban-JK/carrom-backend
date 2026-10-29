@@ -75,7 +75,13 @@ export class TournamentsService {
       this.matchRepo.find({
         where: { tournament_id: tournament.id },
         order: { scheduled_start: 'ASC', match_number: 'ASC' },
-        relations: ['team_a', 'team_b', 'winner_team'],
+        relations: [
+          'team_a',
+          'team_a.players',
+          'team_b',
+          'team_b.players',
+          'winner_team',
+        ],
       }),
     ]);
 
@@ -194,6 +200,8 @@ export class TournamentsService {
       tournament.scoring_rule = dto.scoring_rule;
     if (dto.target_score !== undefined)
       tournament.target_score = dto.target_score;
+    if (dto.banner_url !== undefined)
+      tournament.banner_url = dto.banner_url;
 
     const saved = await this.tournamentRepo.save(tournament);
     this.updatesService.emit({

@@ -11,13 +11,13 @@ export class RegisterTeamDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
-  @MaxLength(50)
+  @MaxLength(60)
   team_name: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(2)
-  @MaxLength(50)
+  @MaxLength(60)
   captain_name: string;
 
   @IsOptional()
@@ -31,8 +31,16 @@ export class RegisterTeamDto {
   player_names: string[];
 
   @IsOptional()
+  @IsString()
+  logo_url?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  tagline?: string;
+
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   substitutes?: string[];
 }
-

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Delete, Body, UseGuards } from '@nestjs/common';
 import { FixturesService } from './fixtures.service';
 import { GenerateFixturesDto } from './dto/generate-fixtures.dto';
 import { ResetFixturesDto } from './dto/reset-fixtures.dto';
@@ -18,6 +18,12 @@ export class FixturesController {
   @Post('reset')
   async reset(@Body() dto: ResetFixturesDto) {
     return this.fixturesService.reset(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  async deleteFixtures() {
+    return this.fixturesService.reset({ reopen_registration: true });
   }
 }
 
