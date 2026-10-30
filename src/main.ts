@@ -5,6 +5,7 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as bcrypt from "bcryptjs";
 import * as os from "os";
+import { json, urlencoded } from "express";
 import { AppModule } from "./app.module";
 import {
   Admin,
@@ -23,6 +24,10 @@ async function bootstrap() {
 
   // Set API prefix
   app.setGlobalPrefix("api");
+
+  // Increase payload limits for image uploads
+  app.use(json({ limit: "50mb" }));
+  app.use(urlencoded({ extended: true, limit: "50mb" }));
 
   // Enable CORS for LAN access
   app.enableCors({
