@@ -13,6 +13,7 @@ import {
   Match,
   MatchEvent,
   TournamentSetting,
+  TournamentUser,
   TournamentFormat,
   TournamentStatus,
 } from './entities';
@@ -23,6 +24,7 @@ import { TeamsModule } from './modules/teams/teams.module';
 import { FixturesModule } from './modules/fixtures/fixtures.module';
 import { MatchesModule } from './modules/matches/matches.module';
 import { LeaderboardModule } from './modules/leaderboard/leaderboard.module';
+import { UsersModule } from './modules/users/users.module';
 
 // Render Cloud PostgreSQL Database directly hardcoded
 const RENDER_DATABASE_URL =
@@ -58,6 +60,7 @@ const RENDER_DATABASE_URL =
             Match,
             MatchEvent,
             TournamentSetting,
+            TournamentUser,
           ],
           synchronize: true, // auto create schema if missing
           logging: false,
@@ -72,6 +75,7 @@ const RENDER_DATABASE_URL =
     FixturesModule,
     MatchesModule,
     LeaderboardModule,
+    UsersModule,
   ],
   providers: [
     {

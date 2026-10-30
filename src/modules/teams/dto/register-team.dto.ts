@@ -31,6 +31,11 @@ export class RegisterTeamDto {
   player_names: string[];
 
   @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  player_user_ids?: string[];
+
+  @IsOptional()
   @IsString()
   logo_url?: string;
 

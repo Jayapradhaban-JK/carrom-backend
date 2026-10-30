@@ -25,6 +25,9 @@ export class Player {
   @Column()
   player_name: string;
 
+  @Column({ nullable: true })
+  user_id?: string;
+
   @Column({ default: false })
   is_captain: boolean;
 

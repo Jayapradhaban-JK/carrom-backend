@@ -5,4 +5,5 @@ export * from './match.entity';
 export * from './match-event.entity';
 export * from './admin.entity';
 export * from './tournament-setting.entity';
+export * from './tournament-user.entity';
 

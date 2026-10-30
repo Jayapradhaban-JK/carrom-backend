@@ -9,6 +9,7 @@ import {
   Match,
   MatchEvent,
   TournamentSetting,
+  TournamentUser,
   TournamentFormat,
   TournamentStatus,
   MatchStatus,
@@ -37,6 +38,7 @@ const testDataSource = new DataSource({
     Match,
     MatchEvent,
     TournamentSetting,
+    TournamentUser,
   ],
   synchronize: true,
 });

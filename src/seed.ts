@@ -12,6 +12,7 @@ import { Player } from "./entities/player.entity";
 import { Match } from "./entities/match.entity";
 import { MatchEvent } from "./entities/match-event.entity";
 import { TournamentSetting } from "./entities/tournament-setting.entity";
+import { TournamentUser } from "./entities/tournament-user.entity";
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ const AppDataSource = new DataSource({
     Match,
     MatchEvent,
     TournamentSetting,
+    TournamentUser,
   ],
   synchronize: true,
 });

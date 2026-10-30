@@ -11,6 +11,7 @@ import { Team } from '../../entities/team.entity';
 import { Player } from '../../entities/player.entity';
 import { Tournament } from '../../entities/tournament.entity';
 import { Match } from '../../entities/match.entity';
+import { TournamentUser } from '../../entities/tournament-user.entity';
 import { TournamentsService } from '../tournaments/tournaments.service';
 import { UpdatesService } from '../updates/updates.service';
 import { RegisterTeamDto } from './dto/register-team.dto';
@@ -27,6 +28,8 @@ export class TeamsService {
     private readonly playerRepo: Repository<Player>,
     @InjectRepository(Match)
     private readonly matchRepo: Repository<Match>,
+    @InjectRepository(TournamentUser)
+    private readonly userRepo: Repository<TournamentUser>,
     private readonly tournamentsService: TournamentsService,
     private readonly updatesService: UpdatesService,
     private readonly dataSource: DataSource,
@@ -155,6 +158,51 @@ export class TeamsService {
       seenSubs.add(norm);
     }
 
+    // Validate that no player is already registered in another team in this tournament
+    const existingTeams = await this.teamRepo.find({
+      where: { tournament_id: tournament.id },
+      relations: ['players'],
+    });
+
+    for (const name of [...activePlayerNames, ...rawSubstitutes]) {
+      const norm = this.normalizeName(name);
+      for (const t of existingTeams) {
+        const alreadyInTeam = (t.players || []).some(
+          (p) => this.normalizeName(p.player_name) === norm,
+        );
+        if (alreadyInTeam) {
+          throw new ConflictException(
+            `User "${name}" is already registered in team "${t.team_name}" (${t.registration_number}). Duplicate registrations are not allowed.`,
+          );
+        }
+      }
+    }
+
+    // Check if tournament has user pool configured
+    const userPoolCount = await this.userRepo.count({
+      where: { tournament_id: tournament.id },
+    });
+
+    const userMap = new Map<string, TournamentUser>();
+    if (userPoolCount > 0) {
+      const allUsers = await this.userRepo.find({
+        where: { tournament_id: tournament.id },
+      });
+      for (const u of allUsers) {
+        userMap.set(u.normalized_name, u);
+        userMap.set(u.id, u);
+      }
+
+      for (const name of activePlayerNames) {
+        const norm = this.normalizeName(name);
+        if (!userMap.has(norm)) {
+          throw new BadRequestException(
+            `Selected user "${name}" is not in the tournament users list. Please select an eligible user.`,
+          );
+        }
+      }
+    }
+
     // Run creation inside a transaction
     return this.dataSource.transaction(async (manager) => {
       // Determine next registration number
@@ -183,10 +231,12 @@ export class TeamsService {
       for (let i = 0; i < activePlayerNames.length; i++) {
         const pName = activePlayerNames[i];
         const isCap = this.normalizeName(pName) === this.normalizeName(cleanCaptain);
+        const matchedUser = userMap.get(this.normalizeName(pName));
         playerEntities.push(
           manager.create(Player, {
             team_id: savedTeam.id,
             player_name: pName,
+            user_id: matchedUser ? matchedUser.id : undefined,
             is_captain: isCap,
             is_substitute: false,
           }),
