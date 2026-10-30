@@ -12,7 +12,10 @@ export interface TournamentUpdatePayload {
     | 'MATCH_UPDATED'
     | 'SCORE_UPDATED'
     | 'TOURNAMENT_UPDATED'
-    | 'REGISTRATION_STATUS';
+    | 'REGISTRATION_STATUS'
+    | 'USER_ADDED'
+    | 'USERS_BULK_ADDED'
+    | 'USER_DELETED';
   tournamentId?: string;
   timestamp: string;
   data?: any;

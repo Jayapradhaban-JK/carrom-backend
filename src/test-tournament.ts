@@ -59,11 +59,13 @@ async function runTests() {
   const matchRepo = testDataSource.getRepository(Match);
   const eventRepo = testDataSource.getRepository(MatchEvent);
   const settingRepo = testDataSource.getRepository(TournamentSetting);
+  const userRepo = testDataSource.getRepository(TournamentUser);
 
   // Clear data for clean test run
   await testDataSource.query("DELETE FROM match_events");
   await testDataSource.query("DELETE FROM matches");
   await testDataSource.query("DELETE FROM players");
+  await testDataSource.query("DELETE FROM tournament_users");
   await testDataSource.query("DELETE FROM teams");
   await testDataSource.query("DELETE FROM tournament_settings");
   await testDataSource.query("DELETE FROM tournaments");
@@ -82,6 +84,7 @@ async function runTests() {
     teamRepo,
     playerRepo,
     matchRepo,
+    userRepo,
     tournamentsService,
     updatesService,
     testDataSource,
