@@ -46,15 +46,20 @@ export class TournamentsService {
     if (!tournament) {
       this.logger.log('No active tournament found, creating default tournament...');
       tournament = this.tournamentRepo.create({
-        name: 'Office Carrom Championship',
+        name: 'Talent Takeaways Infotech PVT LTD - Carrom Tournament 2026',
         format: TournamentFormat.SINGLE_ELIMINATION,
         status: TournamentStatus.REGISTRATION_OPEN,
         registration_open: true,
         team_size: 2,
         match_duration_minutes: 20,
         interval_minutes: 5,
-        start_time: new Date(),
+        start_time: new Date('2026-11-05T09:00:00.000Z'),
         third_place_playoff: false,
+        settings: {
+          company_name: 'Talent Takeaways Infotech PVT LTD',
+          event_date: '2026-11-05',
+          company_logo: '/company-logo.jpg',
+        },
       });
       tournament = await this.tournamentRepo.save(tournament);
     }

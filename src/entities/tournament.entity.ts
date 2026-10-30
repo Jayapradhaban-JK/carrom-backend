@@ -30,7 +30,7 @@ export class Tournament {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ default: 'Office Carrom Championship' })
+  @Column({ default: 'Talent Takeaways Infotech PVT LTD - Carrom Tournament 2026' })
   name: string;
 
   @Column({
